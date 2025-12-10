@@ -167,10 +167,6 @@ def dynamicGen():
             fileName = "toto_dyn_graph"
             genPicture(fileName=fileName)
 
-        
-            
-
-
 def main(av):
     print("Bonjour - nothing special here ^^")
     if len(av) >= 2:
