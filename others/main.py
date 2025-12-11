@@ -8,6 +8,8 @@ nb_node=0
 extract=[]
 dot = Digraph(comment='Mon graph orienté')
 
+# finallement, ce que j'ai fait c'est un arbre (et pas un graph orienté, car on peut avoir plusieurs parent dans ce 
+# deuxieme cas alors qu'ici il n'y a qu'un unique parent) 
 class MyNode:
     def hasParent(self):
         if self.parent:
