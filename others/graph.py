@@ -24,11 +24,12 @@ class GraphNode:
 
     def __init__(self, data="", lvl=1, pseudo=""):
         self.id = uuid.uuid4()
+        self.level = lvl
         self.easy_id=pseudo
         self.data_string = data
         self.list_child = []
         self.list_parent = []
-        self.level = lvl
+
 
 
 class MaistreNode:
@@ -39,6 +40,8 @@ class MaistreNode:
 
     def GenOneMainChild(self, dataGvn="nothing", pseudoGvn="pseudoD_default"):
         self.list_root_node.append(GraphNode(data=dataGvn, pseudo=pseudoGvn))
+
+    
 
     def DisplayRootNode(self):
         for i in self.list_root_node:

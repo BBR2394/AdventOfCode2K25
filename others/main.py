@@ -102,7 +102,7 @@ def genDataForPicture(main_node, lvl=0, and_data=False):
         if i.has_created_child:
             genDataForPicture(i, lvl=lvl+1, and_data=and_data)
 
-def genPicture(fileName="mon_graph_oriente"):
+def genPicture(fileName="mon_arbre_oriente"):
     global extract
     print(extract)
     unic_extract = list(set(extract))
@@ -166,7 +166,7 @@ def dynamicGen():
             global extract
             extract = []
             genDataForPicture(main_node=master_node, and_data=True)
-            fileName = "toto_dyn_graph"
+            fileName = "toto_dyn_tree"
             genPicture(fileName=fileName)
 
 def main(av):
@@ -194,7 +194,7 @@ def main(av):
     print('---les enfants du principal---')
     tst.displayMyChild()
     
-    print('--tout le graph--')
+    print('--tout le graph.. en fait l\'abre--')
     #tst.displayAllChild(lvl=level_child)
     tst.displayGraph()
     print("totla node = ", nb_node)
