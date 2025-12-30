@@ -6,30 +6,59 @@ import uuid
 class GraphNode:
 
     def DisplayInfo(self):
-        print("Id : ", self.id, "pseudo : ", self.easy_id," data : ", self.data_string, "level : ", self.level)
+        print("Lvl:", self.level, ",Id : ", self.id, "pseudo : ", self.easy_id," data : ", self.data_string)
 
-    def DisplayChild(self):
+    def DisplayPseudo(self):
+        print(self.easy_id)
+        return True
+
+    def DisplayChild(self, recurent=False):
         for i in self.list_child:
+            if recurent:
+                 for j in range(0, self.level):
+                    print("-", end="")
             i.DisplayInfo()
+            if recurent:
+                i.DisplayChild(recurent)
+
     
-    # def DisplayParent(self):
-    #     for i in self.list_parent:
-    #         i.DisplayInfo()
+    def DisplayParents(self):
+        if self.level == 1:
+            print("le parent est le noeud maitre")
+        for i in self.list_parent:
+            i.DisplayInfo()
 
     def GetShortId(self):
         return str(self.id)[30:]
 
-    def CreateChildFromData(self, data="no data", pseudo="no pseudo"):
-        self.list_child.append(GraphNode(data, self.level+1))
+    def CreateChildFromData(self, data="no data", pseudoGiven="no pseudo", childSParent=None): #childSParent == chil's parent
+        self.list_child.append(GraphNode(data, lvl=self.level+1, pseudo=pseudoGiven ,parent=childSParent))
 
-    def __init__(self, data="", lvl=1, pseudo=""):
-        self.id = uuid.uuid4()
+    def AddParent(self, parent):
+        if self.level > parent.level:
+            self.list_parent.append(parent)
+        else:
+            print("cannot add parent because it is not in the right level : it must be in lower level")
+
+    def hasParent(self):
+        if len(self.list_parent) > 0:
+            return True
+        else:
+            return False
+
+    def __init__(self, data="", lvl=1, pseudo="", parent=None, uuid_arg=""):
+        if uuid_arg:
+            self.id = uuid.UUID(uuid_arg)
+        else:
+            self.id = uuid.uuid4()
         self.level = lvl
         self.easy_id=pseudo
         self.data_string = data
         self.list_child = []
         self.list_parent = []
 
+        if parent:
+            self.list_parent.append(parent)
 
 
 class MaistreNode:
@@ -41,7 +70,8 @@ class MaistreNode:
     def GenOneMainChild(self, dataGvn="nothing", pseudoGvn="pseudoD_default"):
         self.list_root_node.append(GraphNode(data=dataGvn, pseudo=pseudoGvn))
 
-    
+    def CreateMainChild(self, uuid, dataGvn, pseudoGvn):
+        self.list_root_node.append(GraphNode(data=dataGvn, pseudo=pseudoGvn, uuid_arg=uuid))
 
     def DisplayRootNode(self):
         for i in self.list_root_node:
@@ -57,7 +87,10 @@ def dynamicGenGraphe(masterNode=None):
     
     while True:
         if tst != None:
-            print("[", tst.GetShortId(), "]")
+            print("[", tst.GetShortId(), "] - ", end="")
+            print(tst.DisplayPseudo())
+            print("$--$")
+
         entry = input("Que voulez-faire?\n--$>")
 
         if entry == 'quit':
@@ -66,12 +99,19 @@ def dynamicGenGraphe(masterNode=None):
         elif entry == 'add':
             entry_bis = input("Que voulez-ajouter?\n--$>")
             if tst:
-                tst.CreateChildFromData(data=entry_bis)
+                tst.CreateChildFromData(data=entry_bis, childSParent=tst)
             else : 
                 masterNode.GenOneMainChild(dataGvn=entry_bis)
             #tst.addOneChild(dataStr=entry_bis, dataVal=42)
         elif entry == 'display':
             masterNode.DisplayRootNode()
+        elif entry == "display_all":
+            if tst:
+                tst.DisplayChild(True)
+            else:
+                for i in masterNode.list_root_node:
+                    i.DisplayInfo()
+                    i.DisplayChild(True)
         elif entry == 'display_child':
             if tst:
                 rtr = tst.DisplayChild()
@@ -91,11 +131,15 @@ def dynamicGenGraphe(masterNode=None):
                 tst.DisplayInfo()
             else :
                 print("cursor Not Init")
-        # elif entry == 'display_child':
-        #     rtr = tst.displayMyChild()
-        #     print('retour : ', rtr)
         # elif entry == 'info':
         #     rtr = tst.getInfo()
+        elif entry == 'p_moovein':
+            if tst == None:
+                print("le seul parent est le neud maitre")
+            else :
+                tst.DisplayParents()
+                #entry_bis = input("choississez\n--$>")
+
         elif entry == 'moovein':
             print("dans quel enfant se deplacer ? ")
             if tst == None:
@@ -122,12 +166,19 @@ def dynamicGenGraphe(masterNode=None):
                 print(" une erreur est survenu : avez vous choisit une bonne valeur ?")
         elif entry == 'reset_cursor':
             print("retour au nœud maitre")
-            tst = masterNode
-        # elif entry == "goto_parent":
-        #     if tst.hasParent():
-        #         tst = tst.parent
-        #     else : 
-        #         print(" on n'a pas de parent ")
+            tst = None
+        elif entry == 'display_parents':
+            if tst == None:
+                print("No parents : main node")
+            else :
+                tst.DisplayParents()
+        elif entry == "goto_parent":
+            if tst.hasParent():
+                print("on affiche les parents")
+                tst.DisplayParents()
+            else : 
+                print(" on n'a pas de parent (ou pas de parent lié")
+
         # elif entry == "picture":
         #     global extract
         #     extract = []
@@ -135,15 +186,53 @@ def dynamicGenGraphe(masterNode=None):
         #     fileName = "toto_dyn_graph"
         #     genPicture(fileName=fileName)
 
+def defaultCreation(mainNode):
+    print("default creation")
+    mainNode.GenOneMainChild("bonjour", "Salutation arrivé")
+    mainNode.GenOneMainChild("au revoir", "Salutation départ")
+    mainNode.GenOneMainChild("ntm", "Salutation insulte")
+    mainNode.GenOneMainChild("une donnée")
+    mainNode.DisplayRootNode()
+    dynamicGenGraphe(mainNode)
+
+
+def readAndStoreFromFile(nodeMaster, filename):
+    fd = open("data.csv", 'r')
+    input = fd.read()
+    lst = input.split('\n')
+    idx = 1
+    while idx < len(lst):
+        print(lst[idx])
+        
+        line = lst[idx].split(';')
+        print(line)
+        if int(line[3]) == 1:
+            nodeMaster.CreateMainChild(line[0], line[2], line[1])
+        else:
+            print("->pour le moment on ne fait que le niveau 1")
+        idx+=1
+
 def main(av):
     print("run graph.py")
     mn = MaistreNode()
-    mn.GenOneMainChild("bonjour", "Salutation arrivé")
-    mn.GenOneMainChild("au revoir", "Salutation départ")
-    mn.GenOneMainChild("ntm", "Salutation insulte")
-    mn.DisplayRootNode()
 
-    dynamicGenGraphe(mn)
+    if len(av) >= 2:
+        if av[1] == "--dyn" or av[1] == "-d":
+            dynamicGenGraphe(mn)
+            return 0
+        elif av[1] == "--dyn-auto" :
+            defaultCreation(mn)
+        elif av[1] == "-r" :
+            print("readfile")
+            readAndStoreFromFile(mn, "")
+            mn.DisplayRootNode()
+            dynamicGenGraphe(mn)
+        
+            #if 
+            #readFile(av[2])
+            #defaultCreation(mn)
+    else :
+        defaultCreation(mn)
 
 
 

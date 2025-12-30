@@ -1,0 +1,9 @@
+uid;pseudo;data;level;parent
+b3d5d95a-e828-457a-8652-acb1cafa4f06;test 1;bonjour;1;None
+5b32343e-076a-4720-898f-85382d8cb411;test 2;salut;1;None
+3b914787-79a5-4c67-bfb5-8a8254707f9a;test 3;yoo;1;None
+c5eae7cb-cce8-46ba-94a6-0cb9e6398cf6;test 4;bjour;1;None
+42088d3b-ce0d-4101-9cc4-076f421a194d;def;456;2;0
+8af56ff9-7fdb-4b3c-8f48-06428d5b528f;ghi;789;2;0
+f78011e2-50f0-4bbd-8dfa-d996e50e17c5;test 5;ohayou;1;None
+2071cb8a-02a0-4119-af73-eb9641e62b5f;test 6;goedendag;1;None
